@@ -1,0 +1,15 @@
+{
+  "id": "example",
+  "name": "Example App",
+  "author": "IAMMETER",
+  "description": "A minimal example app for validating the pipeline.",
+  "tags": ["example"],
+  "version": "0.1.0",
+  "runtime": "static",
+  "entry": "frontend/index.html",
+  "configSchema": [],
+  "links": {
+    "source": "https://github.com/IAMMETER/iammeter",
+    "docs": "apps/example/README.md"
+  }
+}
