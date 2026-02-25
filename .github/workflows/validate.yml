@@ -1,4 +1,4 @@
-name: Validate Manifests
+name: Validate Manifests & Hosted Docker Build
 
 on:
   pull_request:
@@ -21,3 +21,31 @@ jobs:
 
       - name: Validate manifests
         run: npm run validate:manifests
+
+  docker-build-hosted:
+    runs-on: ubuntu-latest
+    needs: validate
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Find hosted apps
+        id: find_hosted
+        run: |
+          echo "Scanning hosted apps..."
+          HOSTED_DIRS=$(jq -r '
+            . as $manifest
+            | select(.runtime=="hosted")
+            | input_filename
+          ' apps/*/manifest.json | xargs -n1 dirname || true)
+
+          echo "HOSTED_DIRS=$HOSTED_DIRS"
+          echo "HOSTED_DIRS=$HOSTED_DIRS" >> $GITHUB_ENV
+
+      - name: Build hosted apps
+        if: env.HOSTED_DIRS != ''
+        run: |
+          for dir in $HOSTED_DIRS; do
+            echo "Building Docker image for $dir/backend ..."
+            docker build -t hosted-test-image $dir/backend
+          done
