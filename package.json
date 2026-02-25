@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "validate:manifests": "node tools/validate-manifests.mjs"
+    "validate:manifests": "node tools/validate-manifests.mjs",
+    "generate:app-index": "node tools/generate-app-index.mjs"
   },
   "devDependencies": {
     "ajv": "^8.17.1",
