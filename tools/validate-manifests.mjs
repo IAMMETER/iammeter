@@ -27,7 +27,7 @@ function exists(relOrAbs, baseDir) {
 }
 
 const schema = loadJson(SCHEMA_PATH);
-const ajv = new Ajv({ allErrors: true, strict: true });
+const ajv = new Ajv({ allErrors: true, strict: false });
 addFormats(ajv);
 const validate = ajv.compile(schema);
 
