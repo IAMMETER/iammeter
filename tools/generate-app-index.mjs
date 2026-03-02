@@ -5,9 +5,10 @@ import fg from "fast-glob";
 const ROOT = process.cwd();
 const appsDir = path.join(ROOT, "apps");
 
-// GitHub Pages base
 const DEFAULT_PAGES_BASE_URL =
   "https://iammeter.github.io/IAMMETER-OpenApps/";
+
+const SCREENSHOT_EXTS = ["png", "jpg", "jpeg"];
 
 function ensureTrailingSlash(u) {
   return u.endsWith("/") ? u : u + "/";
@@ -32,11 +33,24 @@ function buildGitHubBlobUrl(repoRoot, filePath) {
 }
 
 function buildRawUrl(repoRoot, filePath) {
-  // repoRoot: https://github.com/owner/repo
   const parts = repoRoot.replace("https://github.com/", "").split("/");
   const owner = parts[0];
   const repo = parts[1];
   return `https://raw.githubusercontent.com/${owner}/${repo}/main/${filePath}`;
+}
+
+function findScreenshot(appId) {
+  const appRoot = path.join(ROOT, "apps", appId);
+
+  for (const ext of SCREENSHOT_EXTS) {
+    const file = `screenshot.${ext}`;
+    const full = path.join(appRoot, file);
+    if (fs.existsSync(full)) {
+      return `apps/${appId}/${file}`;
+    }
+  }
+
+  return null;
 }
 
 async function main() {
@@ -51,9 +65,9 @@ async function main() {
     const fullPath = path.join(ROOT, file);
     const manifest = JSON.parse(fs.readFileSync(fullPath, "utf8"));
 
-    const repoRoot = removeTrailingSlash(manifest.links?.source || "");
+    const repoRoot = removeTrailingSlash(manifest.source || "");
     const entryPath = `apps/${manifest.id}/${manifest.entry}`;
-    const docsPath = manifest.links?.docs || "";
+    const docsPath = manifest.docs || "";
 
     const app = {
       id: manifest.id,
@@ -64,35 +78,34 @@ async function main() {
       tags: manifest.tags,
       runtime: manifest.runtime,
 
-      // Original entry path (relative to repo root)
       entry: entryPath,
 
-      // Repository info
       repoUrl: repoRoot,
       appDirUrl: repoRoot
         ? buildGitHubDirUrl(repoRoot, manifest.id)
         : null,
 
-      // Docs URL
       docsUrl:
         repoRoot && docsPath
           ? buildGitHubBlobUrl(repoRoot, docsPath)
           : null,
 
-      // Raw entry file (useful for debugging / advanced usage)
       rawFileUrl:
         repoRoot
           ? buildRawUrl(repoRoot, entryPath)
           : null
     };
 
-    // Only for static apps
     if (manifest.runtime === "static") {
       app.pagesUrl = buildUrl(pagesBase, entryPath);
       app.previewUrl = app.pagesUrl;
+
+      const screenshotRel = findScreenshot(manifest.id);
+      if (screenshotRel) {
+        app.screenshotUrl = buildUrl(pagesBase, screenshotRel);
+      }
     }
 
-    // Hosted info (kept as-is)
     if (manifest.runtime === "hosted") {
       app.hostedUrl = manifest.hosted?.hostedUrl || null;
       app.hostedStatus = manifest.hosted?.status || null;
