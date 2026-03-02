@@ -65,10 +65,12 @@ async function main() {
     const fullPath = path.join(ROOT, file);
     const manifest = JSON.parse(fs.readFileSync(fullPath, "utf8"));
 
-    const repoRoot = removeTrailingSlash(manifest.source || "");
+    const repoRoot = removeTrailingSlash(
+      manifest.links?.source || manifest.source || ""
+    );    
     const entryPath = `apps/${manifest.id}/${manifest.entry}`;
-    const docsPath = manifest.docs || "";
-
+    const docsPath =
+      manifest.links?.docs || manifest.docs || "";
     const app = {
       id: manifest.id,
       name: manifest.name,
