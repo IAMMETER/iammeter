@@ -1,6 +1,6 @@
 {
   "id": "example-static",
-  "name": "Example App",
+  "name": "Example-static App",
   "author": "IAMMETER",
   "description": "A minimal example app for validating the pipeline.",
   "tags": ["example"],
@@ -9,7 +9,7 @@
   "entry": "frontend/index.html",
   "configSchema": [],
   "links": {
-    "source": "https://github.com/IAMMETER/IAMMETER-OpenApps",
-    "docs": "apps/example/README.md"
+    "source": "https://github.com/IAMMETER/IAMMETER-OpenApps/",
+    "docs": "apps/example-static/README.md"
   }
 }

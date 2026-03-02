@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-03-01T03:00:15.786Z",
+  "generatedAt": "2026-03-02T03:07:25.214Z",
   "total": 2,
   "apps": [
     {
-      "id": "example",
-      "name": "Example App",
+      "id": "example-static",
+      "name": "Example-static App",
       "description": "A minimal example app for validating the pipeline.",
       "author": "IAMMETER",
       "version": "0.1.0",
@@ -12,11 +12,13 @@
         "example"
       ],
       "runtime": "static",
-      "entry": "apps/example/frontend/index.html",
+      "entry": "apps/example-static/frontend/index.html",
       "source": "https://github.com/IAMMETER/IAMMETER-OpenApps",
-      "docs": "apps/example/README.md",
+      "docs": "apps/example-static/README.md",
       "hostedUrl": null,
-      "hostedStatus": null
+      "hostedStatus": null,
+      "pagesUrl": "https://iammeter.github.io/IAMMETER-OpenApps/apps/example-static/frontend/index.html",
+      "previewUrl": "https://iammeter.github.io/IAMMETER-OpenApps/apps/example-static/frontend/index.html"
     },
     {
       "id": "template-hosted",
