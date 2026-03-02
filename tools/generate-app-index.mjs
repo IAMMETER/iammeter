@@ -1,4 +1,3 @@
-// tools/generate-app-index.mjs
 import fs from "node:fs";
 import path from "node:path";
 import fg from "fast-glob";
@@ -14,18 +13,30 @@ function ensureTrailingSlash(u) {
   return u.endsWith("/") ? u : u + "/";
 }
 
-function stripLeadingSlash(p) {
-  return p.startsWith("/") ? p.slice(1) : p;
-}
-
 function removeTrailingSlash(u) {
   return u.endsWith("/") ? u.slice(0, -1) : u;
 }
 
 function buildUrl(base, relPath) {
   const b = ensureTrailingSlash(base);
-  const p = stripLeadingSlash(relPath);
+  const p = relPath.startsWith("/") ? relPath.slice(1) : relPath;
   return new URL(p, b).toString();
+}
+
+function buildGitHubDirUrl(repoRoot, appId) {
+  return `${repoRoot}/tree/main/apps/${appId}`;
+}
+
+function buildGitHubBlobUrl(repoRoot, filePath) {
+  return `${repoRoot}/blob/main/${filePath}`;
+}
+
+function buildRawUrl(repoRoot, filePath) {
+  // repoRoot: https://github.com/owner/repo
+  const parts = repoRoot.replace("https://github.com/", "").split("/");
+  const owner = parts[0];
+  const repo = parts[1];
+  return `https://raw.githubusercontent.com/${owner}/${repo}/main/${filePath}`;
 }
 
 async function main() {
@@ -33,16 +44,16 @@ async function main() {
   const apps = [];
 
   const pagesBase = ensureTrailingSlash(
-    (process.env.PAGES_BASE_URL &&
-      process.env.PAGES_BASE_URL.trim()) ||
-      DEFAULT_PAGES_BASE_URL
+    process.env.PAGES_BASE_URL || DEFAULT_PAGES_BASE_URL
   );
 
   for (const file of manifestFiles) {
     const fullPath = path.join(ROOT, file);
     const manifest = JSON.parse(fs.readFileSync(fullPath, "utf8"));
 
+    const repoRoot = removeTrailingSlash(manifest.links?.source || "");
     const entryPath = `apps/${manifest.id}/${manifest.entry}`;
+    const docsPath = manifest.links?.docs || "";
 
     const app = {
       id: manifest.id,
@@ -52,23 +63,39 @@ async function main() {
       version: manifest.version,
       tags: manifest.tags,
       runtime: manifest.runtime,
+
+      // Original entry path (relative to repo root)
       entry: entryPath,
 
-      // ✅ 统一去掉 source 末尾 /
-      source: manifest.links?.source
-        ? removeTrailingSlash(manifest.links.source.trim())
+      // Repository info
+      repoUrl: repoRoot,
+      appDirUrl: repoRoot
+        ? buildGitHubDirUrl(repoRoot, manifest.id)
         : null,
 
-      docs: manifest.links?.docs || null,
+      // Docs URL
+      docsUrl:
+        repoRoot && docsPath
+          ? buildGitHubBlobUrl(repoRoot, docsPath)
+          : null,
 
-      hostedUrl: manifest.hosted?.hostedUrl || null,
-      hostedStatus: manifest.hosted?.status || null
+      // Raw entry file (useful for debugging / advanced usage)
+      rawFileUrl:
+        repoRoot
+          ? buildRawUrl(repoRoot, entryPath)
+          : null
     };
 
-    // ✅ Only static apps get pagesUrl + previewUrl
+    // Only for static apps
     if (manifest.runtime === "static") {
       app.pagesUrl = buildUrl(pagesBase, entryPath);
       app.previewUrl = app.pagesUrl;
+    }
+
+    // Hosted info (kept as-is)
+    if (manifest.runtime === "hosted") {
+      app.hostedUrl = manifest.hosted?.hostedUrl || null;
+      app.hostedStatus = manifest.hosted?.status || null;
     }
 
     apps.push(app);
