@@ -2,7 +2,7 @@
   "id": "example-static",
   "name": "Example-static App",
   "author": "IAMMETER",
-  "description": "A minimal example app for validating the pipeline.",
+  "description": "A fully static web application (no backend required) that provides a customizable monitoring dashboard for IAMMETER energy meters.",
   "tags": ["example","static"],
   "version": "0.5.0",
   "runtime": "static",
