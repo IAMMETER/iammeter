@@ -13,6 +13,7 @@
       ],
       "runtime": "static",
       "entry": "apps/example-static/frontend/index.html",
+      "entry": "apps/example-static/frontend/index.html",
       "source": "https://github.com/IAMMETER/IAMMETER-OpenApps",
       "docs": "apps/example-static/README.md",
       "hostedUrl": null,
