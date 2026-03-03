@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>IAMMETER AppStore</title>
+
+<style>
+:root{
+  --bg:#0b1220;
+  --panel:#0f1730;
+  --card:#121a2b;
+  --text:#e9f0ff;
+  --muted:#9fb0d0;
+  --border:#22304d;
+  --accent:#4b7bff;
+  --good:#31d17c;
+  --warn:#ffcc66;
+  --bad:#ff6b6b;
+}
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  background:var(--bg);
+  color:var(--text);
+}
+a{ color:inherit; }
+
+header{
+  position:sticky; top:0; z-index:10;
+  background:rgba(11,18,32,.88);
+  backdrop-filter: blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.wrap{ max-width:1160px; margin:0 auto; padding:18px 16px; }
+
+.hrow{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+h1{ margin:0; font-size:20px; letter-spacing:.2px; }
+.sub{ margin:6px 0 0 0; color:var(--muted); font-size:13px; max-width:820px; }
+
+.controls{
+  margin-top:14px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+input, select{
+  padding:10px 12px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  color:var(--text);
+  outline:none;
+  font-size:13px;
+}
+input{ flex:1; min-width:260px; }
+select{ min-width:160px; }
+.pill{
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  color:var(--muted);
+  font-size:12px;
+  white-space:nowrap;
+}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  color:var(--text);
+  font-size:13px;
+  cursor:pointer;
+  user-select:none;
+  text-decoration:none;
+}
+.btn:hover{ border-color:var(--accent); }
+.btn.primary{ border-color:var(--accent); }
+
+main .wrap{ padding-top:16px; }
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+@media (max-width:1020px){ .grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:640px){ .grid{ grid-template-columns:repeat(1,minmax(0,1fr)); } }
+
+.card{
+  position:relative;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  min-height: 410px;
+}
+.thumb{
+  width:100%;
+  aspect-ratio:16/9;
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
+  overflow:hidden;
+  position:relative;
+}
+.thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+.thumb.noimg{
+  background:linear-gradient(135deg,#1a2440,#0f1730);
+}
+.ribbon{
+  position:absolute;
+  top:12px; left:-44px;
+  transform:rotate(-35deg);
+  background:rgba(75,123,255,.95);
+  color:white;
+  font-size:11px;
+  padding:6px 56px;
+  letter-spacing:.2px;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+.ribbon.example{ background:rgba(49,209,124,.92); }
+.ribbon.both{ background:rgba(255,204,102,.94); color:#1a1a1a; }
+
+.content{
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  flex:1;
+}
+.topline{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+.title h3{ margin:0; font-size:16px; line-height:1.25; }
+.meta{ color:var(--muted); font-size:12px; }
+.desc{ color:var(--muted); font-size:13px; line-height:1.45; min-height:42px; }
+
+.badges{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.badge{
+  font-size:11px;
+  padding:4px 8px;
+  border:1px solid var(--border);
+  border-radius:999px;
+  background:var(--panel);
+  color:#cfe0ff;
+  white-space:nowrap;
+}
+.badge.type-open{ border-color: rgba(49,209,124,.35); color:#bff5d7; }
+.badge.type-prop{ border-color: rgba(255,204,102,.35); color:#ffe2a8; }
+.badge.run-static{ border-color: rgba(75,123,255,.35); }
+.badge.run-hosted{ border-color: rgba(255,107,107,.35); color:#ffd1d1; }
+.badge.run-saas{ border-color: rgba(159,176,208,.35); color:#dfe9ff; }
+
+.tags{ display:flex; flex-wrap:wrap; gap:6px; }
+.tag{
+  font-size:11px;
+  padding:4px 8px;
+  border:1px solid var(--border);
+  border-radius:999px;
+  background:var(--panel);
+  color:#cfe0ff;
+}
+
+.actions{
+  margin-top:auto;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.action{
+  flex:1;
+  text-align:center;
+  padding:9px 10px;
+  border-radius:12px;
+  text-decoration:none;
+  font-size:13px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  color:var(--text);
+  transition:all .15s ease;
+  user-select:none;
+}
+.action:hover{ border-color:var(--accent); }
+.action.primary{ border-color:var(--accent); }
+
+.footer{
+  padding:12px 16px 26px 16px;
+  color:var(--muted);
+  font-size:12px;
+  max-width:1160px;
+  margin:0 auto;
+}
+code{
+  background:var(--panel);
+  border:1px solid var(--border);
+  padding:2px 6px;
+  border-radius:8px;
+}
+.small{
+  color:var(--muted);
+  font-size:12px;
+}
+.empty{
+  border:1px dashed var(--border);
+  border-radius:16px;
+  padding:18px;
+  color:var(--muted);
+  background:rgba(15,23,48,.35);
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="hrow">
+      <div>
+        <h1>IAMMETER AppStore</h1>
+        <p class="sub">
+          A curated directory of IAMMETER apps — open-source & proprietary, static & hosted & SaaS.
+          Use search and filters to explore. “Template” apps are intended as starting points for developers.
+        </p>
+      </div>
+      <div class="pill" id="status">Loading…</div>
+    </div>
+
+    <div class="controls">
+      <input id="search" placeholder="Search (name, id, author, category, runtime, type, tags, description)..." />
+
+      <select id="filterType" title="Filter by Type">
+        <option value="">All Types</option>
+        <option value="open-source">Open Source</option>
+        <option value="proprietary">Proprietary</option>
+      </select>
+
+      <select id="filterRuntime" title="Filter by Runtime">
+        <option value="">All Runtimes</option>
+        <option value="static">Static</option>
+        <option value="hosted">Hosted</option>
+        <option value="saas">SaaS</option>
+      </select>
+
+      <select id="filterCategory" title="Filter by Category">
+        <option value="">All Categories</option>
+        <option value="monitoring">Monitoring</option>
+        <option value="control">Control</option>
+        <option value="integration">Integration</option>
+        <option value="analytics">Analytics</option>
+        <option value="tooling">Tooling</option>
+        <option value="other">Other</option>
+      </select>
+
+      <button class="btn" id="resetBtn" type="button">Reset</button>
+      <a class="btn primary" href="#" id="openIndex" target="_blank" rel="noreferrer">Open index.json</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="grid" id="grid"></div>
+    <div id="empty" class="empty" style="display:none; margin-top:14px;">
+      No apps match your search/filters.
+      <div class="small" style="margin-top:6px;">Tip: try clearing filters or searching by tag like <code>template</code> or <code>example</code>.</div>
+    </div>
+  </div>
+</main>
+
+<div class="footer">
+  Index URL: <code id="indexUrl"></code>
+</div>
+
+<script>
+const INDEX_URL = "https://iammeter.github.io/appstore/apps/index.json";
+
+const grid = document.getElementById("grid");
+const statusEl = document.getElementById("status");
+const emptyEl = document.getElementById("empty");
+
+const searchEl = document.getElementById("search");
+const typeEl = document.getElementById("filterType");
+const runtimeEl = document.getElementById("filterRuntime");
+const categoryEl = document.getElementById("filterCategory");
+const resetBtn = document.getElementById("resetBtn");
+
+document.getElementById("indexUrl").textContent = INDEX_URL;
+const openIndex = document.getElementById("openIndex");
+openIndex.href = INDEX_URL;
+
+let apps = [];
+
+function esc(s){
+  return (s ?? "").toString()
+    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+}
+function isHttp(u){ return /^https?:\/\//i.test(u || ""); }
+
+function normalizeApp(a){
+  // tolerate missing optional fields
+  return {
+    id: a.id || "",
+    name: a.name || a.id || "",
+    description: a.description || "",
+    author: a.author || "",
+    version: a.version || "",
+    category: a.category || "other",
+    type: a.type || "",
+    runtime: a.runtime || "",
+    tags: Array.isArray(a.tags) ? a.tags : [],
+
+    openUrl: a.openUrl || a.previewUrl || a.pagesUrl || a.homepageUrl || a.links?.homepage || "",
+    homepageUrl: a.homepageUrl || a.links?.homepage || "",
+    sourceUrl: a.sourceUrl || "",
+    docsUrl: a.docsUrl || "",
+    screenshotUrl: a.screenshotUrl || ""
+  };
+}
+
+function ribbonLabel(tags){
+  const hasTemplate = tags.includes("template");
+  const hasExample = tags.includes("example");
+  if (hasTemplate && hasExample) return { text: "TEMPLATE + EXAMPLE", cls:"both" };
+  if (hasTemplate) return { text: "TEMPLATE", cls:"template" };
+  if (hasExample) return { text: "EXAMPLE", cls:"example" };
+  return null;
+}
+
+function typeBadge(type){
+  if (type === "open-source") return `<span class="badge type-open">Open Source</span>`;
+  if (type === "proprietary") return `<span class="badge type-prop">Proprietary</span>`;
+  return `<span class="badge">Unknown Type</span>`;
+}
+
+function runtimeBadge(runtime){
+  if (runtime === "static") return `<span class="badge run-static">Static</span>`;
+  if (runtime === "hosted") return `<span class="badge run-hosted">Hosted</span>`;
+  if (runtime === "saas") return `<span class="badge run-saas">SaaS</span>`;
+  return `<span class="badge">Unknown Runtime</span>`;
+}
+
+function thumbHtml(app){
+  if (!isHttp(app.screenshotUrl)) return `<div class="thumb noimg"></div>`;
+  return `
+    <div class="thumb">
+      <img src="${esc(app.screenshotUrl)}" alt="Screenshot" loading="lazy"
+           onerror="this.style.display='none'; this.closest('.thumb').classList.add('noimg');">
+    </div>
+  `;
+}
+
+function action(label, url, primary=false){
+  if (!isHttp(url)) return "";
+  return `<a class="action ${primary ? "primary" : ""}" href="${esc(url)}" target="_blank" rel="noreferrer">${label}</a>`;
+}
+
+function cardHtml(app){
+  const rib = ribbonLabel(app.tags || []);
+  const ribHtml = rib ? `<div class="ribbon ${rib.cls}">${esc(rib.text)}</div>` : "";
+
+  const badges = `
+    ${typeBadge(app.type)}
+    ${runtimeBadge(app.runtime)}
+    <span class="badge">${esc(app.category || "other")}</span>
+  `;
+
+  const tags = (app.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("");
+
+  // Buttons:
+  // Open: openUrl
+  // Website: homepageUrl if different from openUrl
+  // Source: sourceUrl
+  // Docs: docsUrl
+  const openBtn = action("Open", app.openUrl, true);
+
+  const websiteBtn = (isHttp(app.homepageUrl) && app.homepageUrl !== app.openUrl)
+    ? action("Website", app.homepageUrl)
+    : "";
+
+  const sourceBtn = action("Source", app.sourceUrl);
+  const docsBtn = action("Docs", app.docsUrl);
+
+  return `
+    <div class="card">
+      ${ribHtml}
+      ${thumbHtml(app)}
+      <div class="content">
+        <div class="topline">
+          <div class="title"><h3>${esc(app.name)}</h3></div>
+        </div>
+
+        <div class="meta">
+          ${esc(app.id)} · v${esc(app.version || "0.0.0")}
+          ${app.author ? ` · by ${esc(app.author)}` : ""}
+        </div>
+
+        <div class="badges">${badges}</div>
+
+        <div class="desc">${esc(app.description)}</div>
+
+        <div class="tags">${tags}</div>
+
+        <div class="actions">
+          ${openBtn}
+          ${websiteBtn}
+          ${sourceBtn}
+          ${docsBtn}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function matches(app, q, type, runtime, category){
+  if (type && app.type !== type) return false;
+  if (runtime && app.runtime !== runtime) return false;
+  if (category && (app.category || "other") !== category) return false;
+
+  if (!q) return true;
+
+  const hay = [
+    app.name, app.id, app.author, app.category, app.type, app.runtime,
+    app.description, ...(app.tags || [])
+  ].join(" ").toLowerCase();
+
+  return hay.includes(q);
+}
+
+function render(){
+  const q = searchEl.value.trim().toLowerCase();
+  const t = typeEl.value;
+  const r = runtimeEl.value;
+  const c = categoryEl.value;
+
+  const filtered = apps.filter(a => matches(a, q, t, r, c));
+  grid.innerHTML = filtered.map(cardHtml).join("");
+
+  emptyEl.style.display = filtered.length ? "none" : "block";
+  statusEl.textContent = `${filtered.length} / ${apps.length} app(s)`;
+}
+
+async function load(){
+  try{
+    statusEl.textContent = "Loading…";
+    const res = await fetch(INDEX_URL, { cache:"no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    apps = (data.apps || []).map(normalizeApp);
+
+    // Sort: templates first, then name
+    apps.sort((a, b) => {
+      const at = (a.tags || []).includes("template") ? 0 : 1;
+      const bt = (b.tags || []).includes("template") ? 0 : 1;
+      if (at !== bt) return at - bt;
+      return (a.name || a.id).localeCompare(b.name || b.id);
+    });
+
+    statusEl.textContent = `${apps.length} app(s)`;
+    render();
+
+    searchEl.addEventListener("input", render);
+    typeEl.addEventListener("change", render);
+    runtimeEl.addEventListener("change", render);
+    categoryEl.addEventListener("change", render);
+
+    resetBtn.addEventListener("click", () => {
+      searchEl.value = "";
+      typeEl.value = "";
+      runtimeEl.value = "";
+      categoryEl.value = "";
+      render();
+    });
+
+  }catch(e){
+    statusEl.textContent = "Failed";
+    grid.innerHTML = `
+      <div class="empty">
+        Failed to load apps index.<br>
+        <div style="margin-top:8px;">Index URL: <code>${esc(INDEX_URL)}</code></div>
+        <div style="margin-top:8px;">Error: <code>${esc(e.message)}</code></div>
+      </div>
+    `;
+  }
+}
+
+load();
+</script>
+
+</body>
+</html>
